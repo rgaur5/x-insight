@@ -25,54 +25,37 @@
     }
     window.onload = onWindowLoad;
 
-    // function DOMtoList(selector) {
-    //     var list_of_inner_texts = [];
-    //     if (selector) {
-    //         var elements = document.querySelectorAll(selector);
-    //         if (elements.length === 0) return "ERROR: querySelector failed to find nodes";
-    //         elements.forEach(function(element) {
-    //             list_of_inner_texts.push(element.innerText);
-    //         });
-    //     } else {
-    //         // If no selector is provided, consider the whole document
-    //         list_of_inner_texts.push(document.documentElement.innerText);
-    //     }
-    //     return list_of_inner_texts;
-    // }
-
-
     function DOMtoList(selector) {
+        var list_of_inner_texts = [];
+        if (selector) {
+            var elements = document.querySelectorAll(selector);
+            if (elements.length === 0) return "ERROR: querySelector failed to find nodes";
+            elements.forEach(function(element) {
+                list_of_inner_texts.push(element.innerText);
+            });
+        } else {
+            // If no selector is provided, consider the whole document
+            list_of_inner_texts.push(document.documentElement.innerText);
+        }
+        return list_of_inner_texts;
+    }
+
+    function DOMtoDict(selector) {
         var list_of_inner_texts = [];
         var list_of_ids = [];
         var list_of_data = [];
-        // var list_of_data2 = {};
+        var list_of_data2 = {};
         var elements = document.querySelectorAll('article[aria-labelledby]');
         var elements2 = document.querySelectorAll('[data-testid="tweet"]')
-        //[class="css-175oi2r r-1iusvr4 r-16y2uox r-1777fci r-kzbkwu"]
-        // css-1rynq56 r-8akbws r-krxsd3 r-dnmrzs r-1udh08x r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-bnwqim
+
         if (elements.length == 0) return "ERROR: querySelector failed to find nodes";
         if (elements2.length == 0) return "ERROR: querySelector failed to find nodes";
-        // elements.forEach(function(element) {
-        //     const id = element.getAttribute('aria-labelledby')
-        //     var elewithtext = element.querySelector('[data-testid="tweetText"]')
-        //     // const tweet_text_elements = element.getElementsByClassName("css-1rynq56 r-8akbws r-krxsd3 r-dnmrzs r-1udh08x r-bcqeeo r-qvutc0 r-37j5jr r-a023e6 r-rjixqe r-16dba41 r-bnwqim")
-        //     // const text = tweet_text_elements[0].innerText
-        //     list_of_ids.push(id);
-        // }); 
-        // elements2.forEach(function(element2) {
-        //     const text = element2.innerText
-        //     list_of_inner_texts.push(text);
-        // }); 
-        // var dict = {};
 
         var maxLength = Math.min(elements.length, elements2.length);
 
         for (var i = 0; i < maxLength; i++) {
             const id = elements[i].getAttribute('aria-labelledby');
-            // const text_elems = elements2[i].getElementsByClassName("css-175oi2r")
-            // const text = text_elems.innerText
-            // const text_query = elements[i].querySelector('[data-testid="tweetText"]');
-            // const text = text_query.outerHTML
+
             var text = "";
 
             const text2 = elements2[i].querySelector('[data-testid="tweetText"]')
@@ -94,10 +77,10 @@
                 text = temp
             }
         }
-            
             list_of_ids.push(id);
             list_of_inner_texts.push(text);
             list_of_data.push(id.slice(0, 10) + " " + text);
+            list_of_data2[id] = text;
         }
 
         // if (text == null) {
@@ -124,7 +107,6 @@
     }
 
     function trackTweets (x) {
-        // console.log("TrackTweets Called.")
         chrome.tabs.query({ active: true, currentWindow: true }).then(function (tabs) {
             var activeTab = tabs[0];
             var activeTabId = activeTab.id;
@@ -132,13 +114,9 @@
             return chrome.scripting.executeScript({
                 target: { tabId: activeTabId },
                 injectImmediately: true,  // uncomment this to make it execute straight away, other wise it will wait for document_idle
-                func: DOMtoList,
-                args: ['article[aria-labelledby]']  // you can use this to target what element to get the html for
+                func: DOMtoDict
             });
         }).then(function (results) {
-            // console.log(results);
-            // console.log(results[0].result);
-
             var a = ""
             results[0].result.forEach(function(entry) {
                 // console.log(entry);
@@ -183,26 +161,3 @@
         });
         
     }
-
-    //WORKS BUT DOES NOT PRINT LOG MSGS
-    // function removeElementById(elementId) {
-    //     chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-    //         var activeTab = tabs[0];
-    //         var activeTabId = activeTab.id;
-    
-    //         chrome.scripting.executeScript({
-    //             target: { tabId: activeTabId },
-    //             func: function(elementId) {
-    //                 var elementToRemove = document.querySelector(elementId);
-    //                 if (elementToRemove) {
-    //                     console.log(`Element with id ${elementId} removed from the DOM.`);
-    //                     elementToRemove.remove();
-    //                 } else {
-    //                     console.log(`Element with id ${elementId} not found.`);
-    //                 }
-    //             },
-    //             args: [elementId],
-    //         });
-    //     });
-    // }    
-
