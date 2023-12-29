@@ -11,17 +11,17 @@ ort.env.wasm.numThreads = 1;
         const config = { attributes: false, childList: true, subtree: false };
         let prev_length = 0;
         // Callback function to execute when mutations are observed
-        const callback = function(mutationsList, observer) {
-            // console.log("MUTATION");
-            // const hasMeaningfulMutations = mutationsList.some(mutation => console.log(mutation.addedNodes));
-            trackTweets(message);
-        };
+        // const callback = function(mutationsList, observer) {
+        //     // console.log("MUTATION");
+        //     // const hasMeaningfulMutations = mutationsList.some(mutation => console.log(mutation.addedNodes));
+        //     trackTweets(message);
+        // };
 
         // Create an observer instance linked to the callback function
-        const observer = new MutationObserver(callback);
-        // Start observing the target node for configured mutations
-        observer.observe(message, config);
-        removeElementById(elementId);
+        // const observer = new MutationObserver(callback);
+        // // Start observing the target node for configured mutations
+        // observer.observe(message, config);
+        // removeElementById(elementId);
         
     }
     window.onload = onWindowLoad;

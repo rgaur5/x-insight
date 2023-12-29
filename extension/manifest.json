@@ -12,5 +12,11 @@
   "permissions": [
       "scripting",
       "activeTab"
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src-elem blob: 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' 'self'; object-src 'self' ; script-src 'wasm-unsafe-eval' 'self'"
+  }
 }
+ 
+
+
