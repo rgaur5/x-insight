@@ -1,30 +1,33 @@
 ort.env.wasm.numThreads = 1;    
-    function onWindowLoad() {
+    async function onWindowLoad() {
         var message = document.querySelector('#message');
-        var elementId = '[data-testid="tweet"]'; //cellInnerDiv removes tweet - crashes website
+        var elementId = '[aria-labelledby="id__i5x8zjkzpeg id__rrd0lz4b2en id__t2wbqqb8nh id__9jz0mpx0hru id__kwrx22hykng id__yrvmylc4ap id__9zc4xrkw0a7 id__ti0sgdluzki id__ho6n7l1b3vq id__1zr3c9sf7ly id__rkrxy49d68b id__c9fxrcfjx4q id__dzpttv2d4eh id__rb7zp5puuz id__c3nf9v4ahwo id__c8kt026ed5a id__gq613tdx2k id__g4wdp3qan4e id__07578ldwnpfd"]'; //cellInnerDiv removes tweet - crashes website
         //css-1dbjc4n r-1iusvr4 r-16y2uox r-1777fci r-kzbkwu removes everything but pfp
         //css-1dbjc4n r-eqz5dr r-16y2uox r-1wbh5a2 removes everything but keeps a thin grey line
-        trackTweets(message);
+        await trackTweets(message);
+        await processDictToChangeDOM(dictTweets);
         // Options for the observer (which mutations to observe)
         // Set attributes to false if you do not care if existing nodes have changed,
         //  otherwise set it true. 
-        const config = { attributes: false, childList: true, subtree: false };
-        let prev_length = 0;
-        // Callback function to execute when mutations are observed
+        // const config = { attributes: false, childList: true, subtree: false };
+        // let prev_length = 0;
+        // // Callback function to execute when mutations are observed
         // const callback = function(mutationsList, observer) {
         //     // console.log("MUTATION");
         //     // const hasMeaningfulMutations = mutationsList.some(mutation => console.log(mutation.addedNodes));
         //     trackTweets(message);
+        //     processDictToChangeDOM(dictTweets);
+    
+            
         // };
-
-        // Create an observer instance linked to the callback function
         // const observer = new MutationObserver(callback);
         // // Start observing the target node for configured mutations
         // observer.observe(message, config);
         // removeElementById(elementId);
-        
+        setTimeout(onWindowLoad, 200);
     }
     window.onload = onWindowLoad;
+    
 
     function DOMtoList(selector) {
         var list_of_inner_texts = [];
@@ -40,7 +43,7 @@ ort.env.wasm.numThreads = 1;
         }
         return list_of_inner_texts;
     }
-
+    var dictTweets = {};
     async function DOMtoDict() {
         // var list_of_inner_texts = [];
         // var list_of_ids = [];
@@ -81,7 +84,7 @@ ort.env.wasm.numThreads = 1;
             // list_of_ids.push(id);
             // list_of_inner_texts.push(text);
             // list_of_data.push(id.slice(0, 10) + " " + text);
-            list_of_data2[id] = text;
+            list_of_data2[text] = id;
         }
 
         // if (text == null) {
@@ -90,7 +93,7 @@ ort.env.wasm.numThreads = 1;
         // else {
         //     text = text.outerHTML
         // }
-
+        
         return list_of_data2
         // return ["IDS: "+ list_of_ids.length, "TEXTS: "+ list_of_inner_texts.length];
         // return ["IDS: "+ list_of_ids[0], "TEXTS: "+ list_of_inner_texts[0]];
@@ -120,12 +123,12 @@ ort.env.wasm.numThreads = 1;
 
             var a = "";
             var dictResults = results[0].result; // Assuming results is a dictionary
-    
-            for (var id in dictResults) {
-                if (dictResults.hasOwnProperty(id)) {
-                    var text = dictResults[id];
-                    var model_score = await runModel(text)
-                    a = a.concat(id.slice(0,10) + "\n" + text + "\n" + model_score +  "\n ----------- \n");
+            dictTweets = dictResults
+            for (var text in dictResults) {
+                if (dictResults.hasOwnProperty(text)) {
+                    var id = dictResults[text]; 
+                    var modelscore = await (runModel(text))
+                    a = a.concat(id.slice(0,10) + "\n" + text + "\n"  + modelscore.data +  "\n ----------- \n");
                 }
             }
     
@@ -145,7 +148,7 @@ ort.env.wasm.numThreads = 1;
         return x;
     }
 
-    function removeElementById(elementId) {
+    async function removeElementById(elementId) {
         var x;
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
             var activeTab = tabs[0];
@@ -154,27 +157,62 @@ ort.env.wasm.numThreads = 1;
             chrome.scripting.executeScript({
                 target: { tabId: activeTabId },
                 injectImmediately: true,
-                func: function(elementId) {
+                func: async function(elementId) {
+                    if (/^\[aria-labelledby="[a-zA-Z]"\]$/.test(elementId)) {
+                        console.log("got single letter elementid: " + elementId)
+                        console.log(`NOT FOUND Element with id ${elementId} not found.`);
+                        return false;
+                    }
+                    else {
                     var elementToRemove = document.querySelector(elementId);
                     if (elementToRemove) {
                         x = elementToRemove;
-                        elementToRemove.remove();
+                        await elementToRemove.remove();
+                        console.log(`FOUND Element with id ${elementId} found.`);
                         return true; // Indicates success
                     }
-                    return false; // Indicates element not found
-                },
+                    else {
+                        console.log(`NOT FOUND Element with id ${elementId} not found.`);
+                        return false;
+                    } // Indicates element not found
+                }},
                 args: [elementId],
-            }, function(results) {
-                if (results[0]) {
-                    console.log(`Element with id ${elementId} removed from the DOM.`);
-                    console.log(x);
-                } else {
-                    console.log(`Element with id ${elementId} not found.`);
-                }
             });
         });
         
     }
+
+    async function processDictToChangeDOM(dict) {
+        ids_to_remove = []
+        // console.log(dict)
+        for (var text in dict) {
+            if (dict.hasOwnProperty(text)) {
+                var x = await runModel(text)
+                var modelresult = x.data
+                // console.log(modelresult)
+                if (modelresult < 0.5) {
+                    var id = dict[text]; 
+                    var id_correctformat = '[aria-labelledby="' + id + '"]'
+                    if (Object.values(dict).includes(id)) {
+                        ids_to_remove.push(id_correctformat);
+                    } 
+                }
+                
+            }
+        }
+        // console.log(ids_to_remove[0])
+        for (var f in ids_to_remove) {
+            var delayInMilliseconds = 0; // Adjust the delay if needed
+            await new Promise(resolve => setTimeout(resolve, delayInMilliseconds));
+            await removeElementById(ids_to_remove[f]);
+            // Assuming ids_to_remove is an array
+            const indexToRemove = ids_to_remove.indexOf(ids_to_remove[f]);
+            if (indexToRemove !== -1) {
+                ids_to_remove.splice(indexToRemove, 1);
+            }
+        }
+    }
+
 
     const options = {
         executionProviders: ['wasm'], 
@@ -22725,7 +22763,7 @@ ort.env.wasm.numThreads = 1;
         const feeds = {'input.1' : tensorA}
         return feeds
       }
-      const text = "stephen hawking"; 
+    //   const text = "stephen hawking"; 
       
       async function runModel(text) {
         const options = {
@@ -22743,11 +22781,73 @@ ort.env.wasm.numThreads = 1;
           // const output = await session.run(feeds, ['out']);
           // console.log("Created output")
           // Process the output as needed
-          console.log('Model output:', output);
-          return output;
+        //   console.log('Model output:', output['106']);
+          return output['106'];
         } catch (error) {
           console.error('Error running the model:', error);
           throw error;
         }
       }
-      runModel(text)
+
+//       chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+//     if (request.messageType === "ortProcessing") {
+//         console.log(request.data); 
+//         sendResponse({ result: 'result from popup' });
+//     }
+// });
+
+// chrome.runtime.onMessage.addListener(
+//     function(request, sender, sendResponse) {
+//       if (request.messageType === "ortProcessing")
+//         console.log("got request")
+//         sendResponse("got ur message!");
+//     }
+//   );
+
+
+// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+//     if (request.messageType === "injectOrtScript") {
+        
+//         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+//             var activeTabId = tabs[0].id;
+//             chrome.scripting.executeScript({
+//                 target: { tabId: activeTabId },
+//                 injectImmediately: true,
+//                 files: ["./onnxruntime-web/dist/ort.min.js"],
+//             }).then(() => {
+//                 console.log("ORT injected from BG");
+
+//                 ort.env.wasm.numThreads = 1;    
+//                 const model = "./v1.onnx";
+//                 const session = ort.InferenceSession.create(model);
+//                 const result = runModel("hello there").getData()
+
+//                 sendResponse({ result: "result "});
+//             });
+//         });
+
+//         return true;
+//     }
+// });
+
+
+
+// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+//     if (request.messageType === "ortProcessing") {
+//         console.log(request.data); // Output: Hello from content script!
+
+//         // Return an empty promise
+//         return Promise.resolve()
+//             .then(() => {
+//                 // Your asynchronous logic here, if needed
+//                 // ...
+
+//                 // Send a response back to the content script
+//                 sendResponse({ result: "Empty promise resolved successfully" });
+//             })
+//             .catch(error => {
+//                 // Handle errors and send them back
+//                 sendResponse({ error: error.message });
+//             });
+//     }
+// });
