@@ -1,25 +1,84 @@
-<!-- <html>
-  <body>
-    <h1>Hello Extensions</h1>
-    <script src="popup.js"></script>
-  </body>
-</html> -->
-
 <!DOCTYPE html>
 <html>
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
   <title>Get Page Source</title>
   <style>
     body {
-      width: 300px;
+      width: 140px;
       min-height: 30px;
       overflow: hidden;
+      margin: 0;
+      background-color: black;
+      font-family: 'Rubik', sans-serif;
+      color: white;
     }
+    .title-container {
+      display: flex;
+      align-items: center;
+
+    }
+
+    .logo-container img {
+      max-width: 30px;
+      height: 30px;
+      margin-right: 4px;
+      margin-top: 5px;
+      margin-left: 5px;
+      margin-bottom: 10px ;
+    }
+
+    .custom-title {
+      font-size: 20px; 
+      font-weight: normal; 
+      color: white; 
+      margin: 0;
+      margin-left: 5px;
+    }
+    .info-container1 {
+      display: flex;
+      margin-bottom: 7px;
+      margin-left: 5px;
+    }
+    .info-container2 {
+      display: flex;
+      margin-bottom: 20px;
+      margin-left: 5px;
+    }
+    .custom-info {
+      font-size: 10px; 
+      font-weight: 500; 
+      color: white; 
+      margin: 0;
+    }
+    .custom-info a {
+      color: #4af; 
+      text-decoration: none; 
+    }
+    .custom-info a:visited {
+      color: #8af; 
+    }
+
   </style>
   <script src="./onnxruntime-web/dist/ort.min.js"></script>
   <script src="popup.js"></script>
 </head>
 <body>
-  <div id="message">Loading...</div>
+  <div class="title-container">
+    <h2 class="custom-title">x insight</h2> 
+    <div class="logo-container">
+      <img src="logo.png" alt="Image Title">
+    </div> 
+  </div>
+  
+  <div class="info-container1">
+    <h1 class="custom-info">keep your twitter feed thoughtful, troll-free, and intellectually stimulating</h1>
+  </div>
+
+
+  <div class="info-container2">
+    <h1 class="custom-info"><a href="https://github.com/rgaur5/cautious-dollop" target="_blank">check out the code/mission</a></h1>
+  </div>
+  
 </body>
 </html>
