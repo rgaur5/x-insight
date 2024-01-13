@@ -13,10 +13,11 @@
   - [What's next?](#whats-next)
 
 ## Objective
+Using NLP, X Insight identifies and highlights informative, intellectually stimulating, and well-crafted tweets; all other distractors are removed from your feed. 
+
 Recommendation algorithms are designed to maximize user retention, often leading to polarizing viewpoints, sensational content, and half-true clickbait dominating social media feeds. X/Twitter, however, is uniquely positioned to function as a collective consciousness, being a primarily text-based platform to exchange perspectives on real-world issues. 
 
-There's a conflict of interest here: X's role as a revenue-maximizing (& retention-maximizing) platform directly contradicts its primary functionality: providing a digital townsquare for people to discuss rationally and educate themselves. This project enables this key functionality of X/Twitter. Using NLP, X Insight identifies and highlights informative, intellectually stimulating, and well-crafted tweets; all other distractors are removed from your feed. 
-
+There's a conflict of interest here: X's role as a revenue-maximizing (& retention-maximizing) platform directly contradicts its primary functionality: providing a digital townsquare for people to discuss rationally and educate themselves. This project enables this key functionality of X/Twitter.
 ## Getting Started
 
 ### Download uBlock Origin (dependency)
