@@ -24,7 +24,7 @@ There's a conflict of interest here: X's role as a revenue-maximizing (& retenti
 uBlock Origin is a "wide-spectrum content blocker with CPU and memory efficiency as a primary feature" with 33 million users. The extension (comparable to an ad blocker like [AdblockPlus](https://adblockplus.org/)) is free to install at the [Chrome Web Store](https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm). *Without uBlock Origin's ad removal features, X Insight will not function as expected.*
 
 ### Installation Options
-Download the extension for free on the [Chrome Web Store](https://dummy.com).
+Download the extension for free on the Chrome Web Store (Edit: Not currently on Web Store, coming soon...).
 
 Download the "extension" folder from this repository **AND** enable Chrome developer mode to use. Load the extension folder into your browser. Here's a [tutorial](https://www.youtube.com/watch?v=oswjtLwCUqg) on how to do this in Chrome.
 
